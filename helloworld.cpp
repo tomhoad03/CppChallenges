@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <cmath>
 
@@ -12,6 +13,53 @@ or (using compile and run)
 
 ctrl + 6
 */
+
+
+// functions
+void myWhile() {
+    int count = 0;
+    while (count < 10) {
+        cout << count;
+        ++count;
+    }
+    cout << endl;
+}
+
+void myDo() { 
+    int count = 0;
+    do {
+        cout << count;
+        ++count;
+    } while (count < 10);
+    cout << endl;
+}
+
+void myFor() {
+    for (int i = 0; i < 10; i++) {
+        cout << i;
+    }
+    cout << endl;
+}
+
+void myBreak() {
+    for (int i = 0; i < 10; i++) {
+        if (i == 5) {
+            break;
+        }
+        cout << i;
+    }
+    cout << endl;
+}
+
+void myContinue() {
+    for (int i = 0; i < 10; i++) {
+        if (i % 2 == 0) {
+            continue;
+        }
+        cout << i;
+    }
+    cout << endl;
+}
 
 int main() {
     // hello world
@@ -64,16 +112,60 @@ int main() {
     // ifs
     int y = 65;
     if (y > 70) {
-        cout << "1";
+        cout << "1" << endl;
     } else if (y > 60) {
-        cout << "2-1";
+        cout << "2-1" << endl;
     } else if (y > 50) {
-        cout << "2-2";
+        cout << "2-2" << endl;
     } else if (y > 40) {
-        cout << "3";
+        cout << "3" << endl;
     } else {
-        cout << "fail";
+        cout << "fail" << endl;
     }
+
+    // loops
+    myWhile();
+    myDo();
+    myFor();
+    myBreak();
+    myContinue();
+
+    // arrays
+    string days[] = {"mon", "TUE", "WED", "THU", "FRI", "SAT", "SUN"};
+    cout << days[3] << endl;
+    days[0] = "MON";
+
+    for (string day : days) {
+        if (day != days[sizeof(days)/sizeof(days[0]) - 1]) {
+            cout << day << ", ";
+        } else {
+            cout << day << endl;
+        }
+    }
+
+    // references and pointers
+    string food = "Pizza";
+    string &meal = food;
+    string* ptr = &food;
+
+    cout << food << ", " << meal << ", ";
+    food = "Burger";
+    cout << food << ", " << meal << ", ";
+    meal = "Chips";
+    cout << food << ", " << meal << endl;
+    cout << &food << ", " << &meal << ", " << ptr << endl;
+
+    // files
+    ofstream MyWriteFile("test.txt");
+    MyWriteFile << "Hello World!";
+    MyWriteFile.close();
+
+    string fileText;
+    ifstream MyReadFile("test.txt");
+    while (getline (MyReadFile, fileText)) {
+        cout << fileText;
+    }
+    MyReadFile.close();
 
     return 0;
 }

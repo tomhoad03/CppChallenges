@@ -68,6 +68,36 @@ void swapNums(int &num1, int &num2);
 int sum(int num1, int num2);
 int sum(int num1, int num2, int num3);
 
+// classes
+class MyClass {
+    private:
+        int year = 2021;
+
+    public:
+        int myNum;
+        string myString;
+
+        MyClass() {
+            cout << "Constructor!" << endl;
+        }
+
+        void myMethod1() {
+            cout << "Hello World!" << endl;
+        }
+        void myMethod2(string start);
+};
+
+void MyClass::myMethod2(string start) {
+    cout << start << " World!" << endl;
+}
+
+class MyBabyClass: public MyClass {
+    public:
+        void myMethod3() {
+            cout << "Baby Hello World!" << endl;
+        }
+};
+
 int main() {
     // hello world
     cout << "Hello World! \n";
@@ -182,6 +212,25 @@ int main() {
     swapNums(x1, y1);
     cout << x1 << ", " << y1 << endl;
     cout << sum(5, 10) << ", " << sum(5, 10, 15) << endl;
+
+    // objects and classes
+    MyClass myObj;
+    myObj.myNum = 21;
+    myObj.myString = "Tom Hoad";
+    cout << "Age: " << myObj.myNum << ", Name: " << myObj.myString << endl;
+    myObj.myMethod1();
+    myObj.myMethod2("Goodbye");
+    MyBabyClass myBabyObj;
+    myBabyObj.myMethod3();
+
+    // exceptions
+    try {
+        if (myObj.myNum > 20) {
+            throw (myObj.myString);
+        }
+    } catch (string name) {
+        cout << name << endl;
+    }
 
     return 0;
 }

@@ -14,7 +14,6 @@ or (using compile and run)
 ctrl + 6
 */
 
-
 // functions
 void myWhile() {
     int count = 0;

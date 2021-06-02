@@ -61,6 +61,13 @@ void myContinue() {
     cout << endl;
 }
 
+// function declaration
+void testFunc(string text);
+int returnFive();
+void swapNums(int &num1, int &num2);
+int sum(int num1, int num2);
+int sum(int num1, int num2, int num3);
+
 int main() {
     // hello world
     cout << "Hello World! \n";
@@ -165,7 +172,38 @@ int main() {
     while (getline (MyReadFile, fileText)) {
         cout << fileText;
     }
+    cout << endl;
     MyReadFile.close();
 
+    // funcions
+    testFunc("Hello There!");
+    cout << returnFive() << endl;
+    int x1 = 10, y1 = 5;
+    swapNums(x1, y1);
+    cout << x1 << ", " << y1 << endl;
+    cout << sum(5, 10) << ", " << sum(5, 10, 15) << endl;
+
     return 0;
+}
+
+void testFunc(string text) {
+    cout << text << endl;
+}
+
+int returnFive() {
+    return 5;
+}
+
+void swapNums(int &num1, int &num2) {
+    int swap = num1;
+    num1 = num2;
+    num2 = swap;
+}
+
+int sum(int num1, int num2) {
+    return (num1 + num2);
+}
+
+int sum(int num1, int num2, int num3) {
+    return (num1 + num2 + num3);
 }

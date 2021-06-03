@@ -2,37 +2,42 @@
 
 using namespace std;
 
-struct Node
-{
+struct Node {
     int key;
+    int value;
     struct Node* leftChild;
     struct Node* rightChild;
 
     Node(int k) {
         key = k;
+        value = 0;
         leftChild = NULL;
         rightChild = NULL;
     }
 
-    int getKey() {
+    Node(int k, int v) {
+        key = k;
+        value = v;
+        leftChild = NULL;
+        rightChild = NULL;
+    }
+
+    void getKey() {
         cout << key << endl;
-        return key;
+    }
+
+    void getValue() {
+        cout << value << endl;
+    }
+    void setValue(int v) {
+        value = v;
     }
 
     Node* getLeftChild() {
-        cout << leftChild -> key << endl;
         return leftChild;
     }
     Node* getRightChild() {
-        cout << rightChild -> key << endl;
         return leftChild;
-    }
-
-    void newLeftChild() {
-        leftChild = new Node(key + 1);
-    }
-    void newRightChild() {
-        leftChild = new Node(key + 2);
     }
 
     void addLeftChild(Node* l) {
@@ -43,12 +48,52 @@ struct Node
     }
 };
 
-int main() {
+struct Tree {
     struct Node* root = new Node(1);
-    root -> getKey();
-    root -> newLeftChild();
-    root -> getLeftChild() -> newLeftChild();
-    root -> getLeftChild() -> getLeftChild();
-    
+    int key = 1;
+
+    void createBasic() {
+        root -> setValue(5);
+        root -> addLeftChild(new Node(2, 3));
+        root -> addRightChild(new Node(3, 10));
+    }
+
+    void getNode(int n) {
+        if (n == 1) {
+            root -> getValue();
+        }
+    }
+
+    void setNode(int n, int v) {
+        if (n == 1) {
+            root -> setValue(v);
+        }
+    }
+
+    void treeWalk() {
+        treeWalk(root);
+    }
+
+    void treeWalk(struct Node* node) {
+        struct Node* left = node -> getLeftChild();
+            
+        if (left != NULL) {
+            treeWalk(left);
+        }
+        node -> getValue();
+
+        struct Node* right = node -> getRightChild();
+            
+        if (right != NULL) {
+            treeWalk(right);
+        }
+    }
+};
+
+int main() {
+    struct Tree* tree = new Tree();
+    tree -> createBasic();
+    tree -> treeWalk();
+
     return 0;
 }

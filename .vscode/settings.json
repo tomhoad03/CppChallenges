@@ -3,6 +3,7 @@
         "ctime": "cpp",
         "cmath": "cpp",
         "scoped_allocator": "cpp",
-        "new": "cpp"
+        "new": "cpp",
+        "ostream": "cpp"
     }
 }

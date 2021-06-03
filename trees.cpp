@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -68,23 +69,40 @@ struct Tree {
     }
 
     void treeWalk() {
-        treeWalk(root);
-        cout << endl;
+        std::vector<int> values = {};
+        values = treeWalk(root);
+        cout << values[1] << endl;
     }
 
-    void treeWalk(struct Node* node) {
+    std::vector<int> treeWalk(struct Node* node) {
         struct Node* left = node -> getLeftChild();
+        struct Node* right = node -> getRightChild();
+
+        std::vector<int> leftValues = {}, rightValues = {}, mergeValues = {};
+        int value = node -> getValue();
             
         if (left != NULL) {
-            treeWalk(left);
+            leftValues = treeWalk(left);
         }
-        node -> printValue();
-
-        struct Node* right = node -> getRightChild();
-            
         if (right != NULL) {
-            treeWalk(right);
+            rightValues = treeWalk(right);
         }
+
+        int leftSize = sizeof(leftValues) / sizeof(leftValues[0]);
+        int rightSize = sizeof(rightValues) / sizeof(rightValues[0]);
+
+        cout << rightSize;
+
+        for (int i = 0; i < leftSize - 1; i++) {
+            mergeValues[i] = leftValues[i];
+        }
+
+        mergeValues[leftSize] = value;
+
+        for (int i = leftSize + 1; i < leftSize + rightSize; i++) {
+            mergeValues[i] = leftValues[i - leftSize];
+        }
+        return mergeValues;
     }
 };
 

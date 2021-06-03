@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "ctime": "cpp",
+        "cmath": "cpp",
+        "scoped_allocator": "cpp",
+        "new": "cpp"
+    }
+}

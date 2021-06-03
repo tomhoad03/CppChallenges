@@ -1,5 +1,10 @@
 #include <iostream>
+#include <stdlib.h>
+#include <stdio.h>
+#include <cstdlib>
 #include <cctype>
+#include <ctime>
+#include <cmath>
 
 using namespace std;
 
@@ -14,6 +19,7 @@ int main() {
     fib();
     fizzbuzz();
     isPali("racecar");
+
     return 0;
 }
 
@@ -54,15 +60,15 @@ void isPali(string text) {
 
     if (length % 2 == 0) {
         if (lowerText.substr(0, length / 2) == reverse(lowerText.substr(length / 2))) {
-            cout << true;
+            cout << true << endl;
         } else {
-            cout << false;
+            cout << false << endl;
         }
     } else {
         if (lowerText.substr(0, length / 2) == reverse(lowerText.substr((length / 2) + 1))) {
-            cout << true;
+            cout << true << endl;
         } else {
-            cout << false;
+            cout << false << endl;
         }
     }
 }

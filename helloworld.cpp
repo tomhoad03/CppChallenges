@@ -140,7 +140,7 @@ int main() {
     cout << "Your name is : " << name << endl;
 
     // maths
-    cout << max (5, 10) << ", " << min (5, 10) << ", " << sqrt(64) << ", " << round(2.6) << ", " << log(2) << endl;
+    cout << max (5, 10) << ", " << min (5, 10) << ", " << sqrt (64) << ", " << round (2.6) << ", " << log (2) << endl;
 
     // booleans
     cout << (5 < 10) << ", " << (5 == 10) << ", " << (5 <= 10) << endl;

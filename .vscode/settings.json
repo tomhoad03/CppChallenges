@@ -4,6 +4,7 @@
         "cmath": "cpp",
         "scoped_allocator": "cpp",
         "new": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "iostream": "cpp"
     }
 }

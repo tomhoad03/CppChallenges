@@ -132,7 +132,7 @@ struct Tree {
         struct Node* left = node -> getLeftChild();
         struct Node* right = node -> getRightChild();
 
-        string leftValues, rightValues, value = to_string(node -> getValue()), result;
+        string value = to_string(node -> getValue()), result;
 
         if (left != NULL) {
             result = treeWalk(left) + " <-- ";
@@ -142,6 +142,32 @@ struct Tree {
             result += " --> " + treeWalk(right);
         }
         return "(" + result + ")";
+    }
+
+    void treeHeight() {
+        int height = treeHeight(root, 1);
+        cout << "Tree height: " << height << endl;
+    }
+
+    int treeHeight(struct Node* node, int currentHeight) {
+        struct Node* left = node -> getLeftChild();
+        struct Node* right = node -> getRightChild();
+
+        int leftHeight = 0, rightHeight = 0;
+
+        if (left != NULL) {
+            leftHeight = treeHeight(left, currentHeight + 1);
+        }
+        if (right != NULL) {
+            rightHeight = treeHeight(right, currentHeight + 1);
+        }
+        if (leftHeight >= rightHeight && leftHeight >= currentHeight) {
+            return leftHeight;
+        } else if (rightHeight > leftHeight && rightHeight >= currentHeight) {
+            return rightHeight;
+        } else {
+            return currentHeight;
+        }
     }
 };
 
@@ -162,6 +188,9 @@ class BTree {
         void printTree() {
             tree -> treeWalk();
         }
+        void printHeight() {
+            tree -> treeHeight();
+        }
 };
 
 int main() {
@@ -177,6 +206,8 @@ int main() {
     tree.removeNode(5);
     tree.removeNode(6);
     tree.printTree();
+
+    tree.printHeight();
 
     return 0;
 }

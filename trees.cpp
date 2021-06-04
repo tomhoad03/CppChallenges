@@ -14,9 +14,6 @@ struct Node {
         rightChild = NULL;
     }
 
-    void printValue() {
-        cout << value << " ";
-    }
     int getValue() {
         return value;
     }
@@ -31,11 +28,17 @@ struct Node {
         return rightChild;
     }
 
-    void addLeftChild(Node* l) {
+    void setLeftChild(Node* l) {
         leftChild = l;
     }
-    void addRightChild(Node* r) {
+    void setLeftChild() {
+        leftChild = NULL;
+    }
+    void setRightChild(Node* r) {
         rightChild = r;
+    }
+    void setRightChild() {
+        rightChild = NULL;
     }
 };
 
@@ -44,73 +47,122 @@ struct Tree {
 
     Tree(int v) : root(new Node(v)) { };
 
-    void newNode(int v) {
-        newNode(root, v);
+    void printRoot() {
+        cout << root -> getValue() << endl;
     }
 
-    void newNode(struct Node* node, int v1) {
+    void addNode(int v) {
+        addNode(root, v);
+    }
+
+    void addNode(struct Node* node, int v1) {
+        struct Node* left = node -> getLeftChild();
+        struct Node* right = node -> getRightChild();
         int v2 = node -> getValue();
 
         if (v1 < v2) {
-            if (node -> getLeftChild() != NULL) {
-                newNode(node -> getLeftChild(), v1);
+            if (left != NULL) {
+                addNode(left, v1);
             } else {
-                node -> addLeftChild(new Node(v1));
+                node -> setLeftChild(new Node(v1));
             }
         } else if (v1 > v2) {
-            if (node -> getRightChild() != NULL) {
-                newNode(node -> getRightChild(), v1);
+            if (right != NULL) {
+                addNode(right, v1);
             } else {
-                node -> addRightChild(new Node(v1));
+                node -> setRightChild(new Node(v1));
             }
         } else {
             cout << "Node already exists!" << endl;
         }
     }
 
-    void treeWalk() {
-        std::vector<int> values = {};
-        values = treeWalk(root);
-        cout << values[1] << endl;
+    void removeNode(int v) {
+        removeNode(root, NULL, v);
     }
 
-    std::vector<int> treeWalk(struct Node* node) {
+    void removeNode(struct Node* node, struct Node* parentNode, int v1) {
+        struct Node* left = node -> getLeftChild();
+        struct Node* right = node -> getRightChild();
+        int v2 = node -> getValue();
+
+        if (v1 == v2) {
+            if (left != NULL) {
+                struct Node* currentRight = left;
+                struct Node* lastRight = NULL;
+
+                while (currentRight -> getRightChild() != NULL) {
+                    lastRight = currentRight;
+                    currentRight = currentRight -> getRightChild();
+                }
+                node -> setValue(currentRight -> getValue());
+                node -> setLeftChild(left);
+                node -> setRightChild(right);
+
+                removeNode(node -> getLeftChild(), node, node -> getValue());
+            } else if (right != NULL) {
+                struct Node* currentLeft = right;
+                struct Node* lastLeft = NULL;
+
+                while (currentLeft -> getLeftChild() != NULL) {
+                    lastLeft = currentLeft;
+                    currentLeft = currentLeft -> getLeftChild();
+                }
+                node -> setValue(currentLeft -> getValue());
+                node -> setLeftChild(left);
+                node -> setRightChild(right);
+
+                removeNode(node -> getRightChild(), node, node -> getValue());
+            } else if (left == NULL && right == NULL) {
+                if (parentNode -> getLeftChild() != NULL && parentNode -> getLeftChild() -> getValue() == v1) {
+                    parentNode -> setLeftChild();
+                } else {
+                    parentNode -> setRightChild();
+                }
+            }
+        } else if (v1 < v2) {
+            removeNode(left, node, v1); 
+        } else if (v1 > v2) {
+            removeNode(right, node, v1);
+        }
+    }
+
+    void treeWalk() {
+        string values = treeWalk(root);
+        cout << values << endl;
+    }
+
+    string treeWalk(struct Node* node) {
         struct Node* left = node -> getLeftChild();
         struct Node* right = node -> getRightChild();
 
-        std::vector<int> leftValues = {}, rightValues = {}, mergeValues = {};
-        int value = node -> getValue();
-            
+        string leftValues, rightValues, value = to_string(node -> getValue());
+
         if (left != NULL) {
             leftValues = treeWalk(left);
         }
         if (right != NULL) {
             rightValues = treeWalk(right);
         }
-
-        int leftSize = sizeof(leftValues) / sizeof(leftValues[0]);
-        int rightSize = sizeof(rightValues) / sizeof(rightValues[0]);
-
-        cout << rightSize;
-
-        for (int i = 0; i < leftSize - 1; i++) {
-            mergeValues[i] = leftValues[i];
-        }
-
-        mergeValues[leftSize] = value;
-
-        for (int i = leftSize + 1; i < leftSize + rightSize; i++) {
-            mergeValues[i] = leftValues[i - leftSize];
-        }
-        return mergeValues;
+        return leftValues + " " + value + " " + rightValues;
     }
 };
 
 int main() {
     struct Tree* tree = new Tree(5);
 
-    tree -> newNode(3);
+    tree -> addNode(3);
+    tree -> addNode(1);
+    tree -> addNode(2);
+    tree -> addNode(6);
+
     tree -> treeWalk();
+    tree -> printRoot();
+
+    tree -> removeNode(6);
+
+    tree -> treeWalk();
+    tree -> printRoot();
 
     return 0;
 }

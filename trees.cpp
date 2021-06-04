@@ -47,10 +47,6 @@ struct Tree {
 
     Tree(int v) : root(new Node(v)) { };
 
-    void printRoot() {
-        cout << root -> getValue() << endl;
-    }
-
     void addNode(int v) {
         addNode(root, v);
     }
@@ -136,33 +132,51 @@ struct Tree {
         struct Node* left = node -> getLeftChild();
         struct Node* right = node -> getRightChild();
 
-        string leftValues, rightValues, value = to_string(node -> getValue());
+        string leftValues, rightValues, value = to_string(node -> getValue()), result;
 
         if (left != NULL) {
-            leftValues = treeWalk(left);
+            result = treeWalk(left) + " <-- ";
         }
+        result += value;
         if (right != NULL) {
-            rightValues = treeWalk(right);
+            result += " --> " + treeWalk(right);
         }
-        return leftValues + " " + value + " " + rightValues;
+        return "(" + result + ")";
     }
 };
 
+class BTree {
+    private:
+        struct Tree* tree;
+
+    public:
+        BTree(int n) {
+            tree = new Tree(5);
+        }
+        void addNode(int n) {
+            tree -> addNode(n);
+        }
+        void removeNode(int n) {
+            tree -> removeNode(n);
+        }
+        void printTree() {
+            tree -> treeWalk();
+        }
+};
+
 int main() {
-    struct Tree* tree = new Tree(5);
+    BTree tree(5);
 
-    tree -> addNode(3);
-    tree -> addNode(1);
-    tree -> addNode(2);
-    tree -> addNode(6);
+    tree.addNode(3);
+    tree.addNode(1);
+    tree.addNode(2);
+    tree.addNode(7);
+    tree.addNode(6);
 
-    tree -> treeWalk();
-    tree -> printRoot();
-
-    tree -> removeNode(6);
-
-    tree -> treeWalk();
-    tree -> printRoot();
+    tree.printTree();
+    tree.removeNode(5);
+    tree.removeNode(6);
+    tree.printTree();
 
     return 0;
 }

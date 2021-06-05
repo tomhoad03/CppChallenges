@@ -130,7 +130,7 @@ class Chess {
             peices[0][4] = greenKing, peices[7][3] = whiteKing;
 
             // test peices
-            King test(1);
+            Rook test(0);
             peices[5][1] = test;
 
             nextTurn();
@@ -219,7 +219,6 @@ class Chess {
                                     direction = -1;
                                 }
 
-                                // calculate the possible moves
                                 if (peices[row + direction][col].getName() == "") {
                                     moves.push_back({row + direction, col});
 
@@ -242,7 +241,47 @@ class Chess {
 
                             // rook moves
                             } else if (peice.getName() == "R") {
-                                cout << "Rook" << endl;
+                                for (int i = row + 1; i <= 7; i++) {
+                                    if (peices[i][col].getName() == "") {
+                                        moves.push_back({i, col});
+                                    } else {
+                                        if (peice.getColour() != peices[i][col].getColour()) {
+                                            moves.push_back({i, col});
+                                        }
+                                        break;
+                                    }
+                                }
+                                for (int i = row - 1; i >= 0; i--) {
+                                    if (peices[i][col].getName() == "") {
+                                        moves.push_back({i, col});
+                                    } else {
+                                        if (peice.getColour() != peices[i][col].getColour()) {
+                                            moves.push_back({i, col});
+                                        }
+                                        break;
+                                    }
+                                }
+                                for (int i = col + 1; i <= 7; i++) {
+                                    if (peices[row][i].getName() == "") {
+                                        moves.push_back({row, i});
+                                    } else {
+                                        if (peice.getColour() != peices[i][col].getColour()) {
+                                            moves.push_back({row, i});
+                                        }
+                                        break;
+                                    }
+                                }
+                                for (int i = col - 1; i >= 0; i--) {
+                                    if (peices[row][i].getName() == "") {
+                                        moves.push_back({row, i});
+                                    } else {
+                                        if (peice.getColour() != peices[i][col].getColour()) {
+                                            moves.push_back({row, i});
+                                        }
+                                        break;
+                                    }
+                                }
+                                cout << endl << "Rook: " << row << ", " << col << endl;
 
                             // knight moves
                             } else if (peice.getName() == "N") {
@@ -262,41 +301,45 @@ class Chess {
                             }
 
                             // user selects possible move
-                            cout << endl << "Possible moves:" << endl;
-                            int count = 1;
-                            for (pair<int, int> move : moves) {
-                                cout << " " << count << ": " << char(move.second + 97) << (8 - move.first) << " ";
-                                ++count;
-                            }
-
-                            int index;
-                            string indexString;
-                            bool valid = false;
-                            do {
-                                try {
-                                    cout << endl << endl << player << " select a move:" << endl;
-                                    cin >> indexString;
-                                    index = stoi(indexString.substr(0, 1));
-
-                                    if (index <= moves.size() && index > 0) {
-                                        valid = true;
-                                    }
-                                } catch(...) {
-                                    valid = false;
+                            if (moves.size() > 0) {
+                                cout << endl << "Possible moves:" << endl;
+                                int count = 1;
+                                for (pair<int, int> move : moves) {
+                                    cout << " " << count << ": " << char(move.second + 97) << (8 - move.first) << " ";
+                                    ++count;
                                 }
-                            } while (valid == false);
 
-                            // the move is made
-                            list<pair<int, int>>::iterator it = moves.begin();
-                            advance(it, index - 1);
-                            pair<int, int> move = *it;
+                                int index;
+                                string indexString;
+                                bool valid = false;
+                                do {
+                                    try {
+                                        cout << endl << endl << player << " select a move:" << endl;
+                                        cin >> indexString;
+                                        index = stoi(indexString.substr(0, 1));
 
-                            string last = peices[move.first][move.second].getName();
-                            peices[move.first][move.second] = peice;
-                            peices[row][col] = {};
+                                        if (index <= moves.size() && index > 0) {
+                                            valid = true;
+                                        }
+                                    } catch(...) {
+                                        valid = false;
+                                    }
+                                } while (valid == false);
 
-                            if (last == "K") {
-                                return true;
+                                // the move is made
+                                list<pair<int, int>>::iterator it = moves.begin();
+                                advance(it, index - 1);
+                                pair<int, int> move = *it;
+
+                                string last = peices[move.first][move.second].getName();
+                                peices[move.first][move.second] = peice;
+                                peices[row][col] = {};
+
+                                if (last == "K") {
+                                    return true;
+                                }
+                            } else {
+                                throw("No moves available for that peice.");
                             }
                         } else {
                             throw("This peice does not belong to the player.");

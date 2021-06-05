@@ -130,7 +130,7 @@ class Chess {
             peices[0][4] = greenKing, peices[7][3] = whiteKing;
 
             // test peices
-            Rook test(0);
+            Bishop test(0);
             peices[5][1] = test;
 
             nextTurn();
@@ -281,15 +281,73 @@ class Chess {
                                         break;
                                     }
                                 }
-                                cout << endl << "Rook: " << row << ", " << col << endl;
 
                             // knight moves
                             } else if (peice.getName() == "N") {
-                                cout << "Knight" << endl;
+                                list<pair<int, int>> knightMoves = {{row - 2, col - 1},
+                                                                    {row - 2, col + 1},
+                                                                    {row - 1, col + 2},
+                                                                    {row + 1, col + 2},
+                                                                    {row + 2, col + 1},
+                                                                    {row + 2, col - 1},
+                                                                    {row + 1, col - 2},
+                                                                    {row - 1, col - 2}};
+
+                                for (pair<int, int> knightMove : knightMoves) {
+                                    if (knightMove.first <= 7 && knightMove.first >= 0 && knightMove.second <= 7 && knightMove.second >= 0) {
+                                        if (peices[knightMove.first][knightMove.second].getName() == "") {
+                                            moves.push_back({knightMove.first, knightMove.second});
+                                        } else {
+                                            if (peice.getColour() != peices[knightMove.first][knightMove.second].getColour()) {
+                                                moves.push_back({knightMove.first, knightMove.second});
+                                            }
+                                        }
+                                    }
+                                }
 
                             // bishop moves
                             } else if (peice.getName() == "B") {
-                                cout << "Bishop" << endl;
+                                bool blocks[4] = {true, true, true, true};
+
+                                for (int i = 1; i <= 7; i++) {
+                                    list<pair<int, int>> bishopMoves;
+
+                                    if (blocks[0]) {
+                                        bishopMoves.push_back({row - i, col - i});
+                                    } else {
+                                        bishopMoves.push_back({-1, -1});
+                                    }
+                                    if (blocks[1]) {
+                                        bishopMoves.push_back({row - i, col + i});
+                                    } else {
+                                        bishopMoves.push_back({-1, -1});
+                                    }
+                                    if (blocks[2]) {
+                                        bishopMoves.push_back({row + i, col + i});
+                                    } else {
+                                        bishopMoves.push_back({-1, -1});
+                                    }
+                                    if (blocks[3]) {
+                                        bishopMoves.push_back({row + i, col - i});
+                                    } else {
+                                        bishopMoves.push_back({-1, -1});
+                                    }
+
+                                    int count = 0;
+                                    for (pair<int, int> bishopMove : bishopMoves) {
+                                        if (bishopMove.first <= 7 && bishopMove.first >= 0 && bishopMove.second <= 7 && bishopMove.second >= 0) {
+                                            if (peices[bishopMove.first][bishopMove.second].getName() == "") {
+                                                moves.push_back({bishopMove.first, bishopMove.second});
+                                            } else {
+                                                if (peice.getColour() != peices[bishopMove.first][bishopMove.second].getColour()) {
+                                                    moves.push_back({bishopMove.first, bishopMove.second});
+                                                }
+                                                blocks[count] = false;
+                                            }
+                                        }
+                                        ++count;
+                                    }
+                                }
                             
                             // queen moves
                             } else if (peice.getName() == "Q") {

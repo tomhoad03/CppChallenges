@@ -101,7 +101,7 @@ class Chess {
     public:
         Chess() {
             // pawns
-            for (int i = 0; i < 8; i++) {
+            for (int i = 0; i <= 7; i++) {
                 Pawn greenPawn(1), whitePawn(0);
                 peices[1][i] = greenPawn, peices[6][i] = whitePawn;
             }
@@ -135,16 +135,15 @@ class Chess {
         // display the board
         void printBoard() {
             cout << endl;
-            for (int i = 0; i < 8; i++) {
+            for (int i = 0; i <= 7; i++) {
                 cout << "|-------------------------------|" << endl;
                 cout << "| ";
 
-                for (int j = 0; j < 8; j++) {
+                for (int j = 0; j <= 7; j++) {
                     Peice peice = peices[i][j];
                     string end = " | ";
 
                     if (j == 7) {
-                        int col = 7 - i;
                         end.append(1, char(56 - i));
                         end.append(1, '\n');
                     }
@@ -205,172 +204,19 @@ class Chess {
                     
                     if (peice.getName() != "") {
                         if (peice.getColour() == colour) {
-
-                            // pawn moves
                             if (peice.getName() == "P") {
-                                int direction;
-                                if (peice.getColour() == 1) {
-                                    direction = 1;
-                                } else {
-                                    direction = -1;
-                                }
-
-                                if (peices[row + direction][col].getName() == "") {
-                                    moves.push_back({row + direction, col});
-
-                                    if ((row = 1) && peice.getColour() == 1) {
-                                        moves.push_back({row + 2, col});
-                                    } else if ((row = 6) && peice.getColour() == 0) {
-                                        moves.push_back({row - 2, col});
-                                    }
-                                }
-                                if (peices[row + direction][col - 1].getName() != "") {
-                                    if (col - 1 <= 7 && col - 1 >= 0) {
-                                        moves.push_back({row + direction, col - 1});
-                                    }
-                                }
-                                if (peices[row + direction][col + 1].getName() != "") {
-                                    if (col + 1 <= 7 && col + 1 >= 0) {
-                                        moves.push_back({row + direction, col + 1});
-                                    }
-                                }
-                            }
-
-                            // rook moves
-                            if (peice.getName() == "R" || peice.getName() == "Q") {
-                                for (int i = row + 1; i <= 7; i++) {
-                                    if (peices[i][col].getName() == "") {
-                                        moves.push_back({i, col});
-                                    } else {
-                                        if (peice.getColour() != peices[i][col].getColour()) {
-                                            moves.push_back({i, col});
-                                        }
-                                        break;
-                                    }
-                                }
-                                for (int i = row - 1; i >= 0; i--) {
-                                    if (peices[i][col].getName() == "") {
-                                        moves.push_back({i, col});
-                                    } else {
-                                        if (peice.getColour() != peices[i][col].getColour()) {
-                                            moves.push_back({i, col});
-                                        }
-                                        break;
-                                    }
-                                }
-                                for (int i = col + 1; i <= 7; i++) {
-                                    if (peices[row][i].getName() == "") {
-                                        moves.push_back({row, i});
-                                    } else {
-                                        if (peice.getColour() != peices[i][col].getColour()) {
-                                            moves.push_back({row, i});
-                                        }
-                                        break;
-                                    }
-                                }
-                                for (int i = col - 1; i >= 0; i--) {
-                                    if (peices[row][i].getName() == "") {
-                                        moves.push_back({row, i});
-                                    } else {
-                                        if (peice.getColour() != peices[i][col].getColour()) {
-                                            moves.push_back({row, i});
-                                        }
-                                        break;
-                                    }
-                                }
-                            }
-
-                            // knight moves
-                            if (peice.getName() == "N") {
-                                list<pair<int, int>> knightMoves = {{row - 2, col - 1},
-                                                                    {row - 2, col + 1},
-                                                                    {row - 1, col + 2},
-                                                                    {row + 1, col + 2},
-                                                                    {row + 2, col + 1},
-                                                                    {row + 2, col - 1},
-                                                                    {row + 1, col - 2},
-                                                                    {row - 1, col - 2}};
-
-                                for (pair<int, int> knightMove : knightMoves) {
-                                    if (knightMove.first <= 7 && knightMove.first >= 0 && knightMove.second <= 7 && knightMove.second >= 0) {
-                                        if (peices[knightMove.first][knightMove.second].getName() == "") {
-                                            moves.push_back({knightMove.first, knightMove.second});
-                                        } else {
-                                            if (peice.getColour() != peices[knightMove.first][knightMove.second].getColour()) {
-                                                moves.push_back({knightMove.first, knightMove.second});
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            
-                            // bishop moves
-                            if (peice.getName() == "B" || peice.getName() == "Q") {
-                                bool blocks[4] = {true, true, true, true};
-
-                                for (int i = 1; i <= 7; i++) {
-                                    list<pair<int, int>> bishopMoves;
-
-                                    if (blocks[0]) {
-                                        bishopMoves.push_back({row - i, col - i});
-                                    } else {
-                                        bishopMoves.push_back({-1, -1});
-                                    }
-                                    if (blocks[1]) {
-                                        bishopMoves.push_back({row - i, col + i});
-                                    } else {
-                                        bishopMoves.push_back({-1, -1});
-                                    }
-                                    if (blocks[2]) {
-                                        bishopMoves.push_back({row + i, col + i});
-                                    } else {
-                                        bishopMoves.push_back({-1, -1});
-                                    }
-                                    if (blocks[3]) {
-                                        bishopMoves.push_back({row + i, col - i});
-                                    } else {
-                                        bishopMoves.push_back({-1, -1});
-                                    }
-
-                                    int count = 0;
-                                    for (pair<int, int> bishopMove : bishopMoves) {
-                                        if (bishopMove.first <= 7 && bishopMove.first >= 0 && bishopMove.second <= 7 && bishopMove.second >= 0) {
-                                            if (peices[bishopMove.first][bishopMove.second].getName() == "") {
-                                                moves.push_back({bishopMove.first, bishopMove.second});
-                                            } else {
-                                                if (peice.getColour() != peices[bishopMove.first][bishopMove.second].getColour()) {
-                                                    moves.push_back({bishopMove.first, bishopMove.second});
-                                                }
-                                                blocks[count] = false;
-                                            }
-                                        }
-                                        ++count;
-                                    }
-                                }
-                            }
-
-                            // king moves
-                            if (peice.getName() == "K") {
-                                list<pair<int, int>> kingMoves = {{row - 1, col - 1},
-                                                                  {row - 1, col},
-                                                                  {row - 1, col + 1},
-                                                                  {row, col + 1},
-                                                                  {row + 1, col + 1},
-                                                                  {row + 1, col},
-                                                                  {row + 1, col - 1},
-                                                                  {row, col - 1}};
-
-                                for (pair<int, int> kingMove : kingMoves) {
-                                    if (kingMove.first <= 7 && kingMove.first >= 0 && kingMove.second <= 7 && kingMove.second >= 0) {
-                                        if (peices[kingMove.first][kingMove.second].getName() == "") {
-                                            moves.push_back({kingMove.first, kingMove.second});
-                                        } else {
-                                            if (peice.getColour() != peices[kingMove.first][kingMove.second].getColour()) {
-                                                moves.push_back({kingMove.first, kingMove.second});
-                                            }
-                                        }
-                                    }
-                                }                                    
+                                moves = getPawnMoves(colour, row, col);
+                            } else if (peice.getName() == "R") {
+                                moves = getRookMoves(colour, row, col);
+                            } else if (peice.getName() == "N") {
+                                moves = getKnightMoves(colour, row, col);
+                            } else if (peice.getName() == "B") {
+                                moves = getBishopMoves(colour, row, col);
+                            } else if (peice.getName() == "Q") {
+                                moves = getRookMoves(colour, row, col);
+                                moves.merge(getBishopMoves(colour, row, col));
+                            } else if (peice.getName() == "K") {
+                                moves = getKingMoves(colour, row, col);                                    
                             }
 
                             // user selects possible move
@@ -410,6 +256,8 @@ class Chess {
 
                                 if (last == "K") {
                                     return true;
+                                } else {
+                                    return checkCheck(!colour);
                                 }
                             } else {
                                 throw("No moves available for that peice.");
@@ -431,6 +279,249 @@ class Chess {
                 return playerTurn(player, colour);
             }
             return false;
+        }
+
+        // check for a check or checkmate
+        bool checkCheck(bool colour) {
+            list<pair<int, int>> kingMoves, peiceMoves;
+            int count;
+
+            // get king moves
+            for (int i = 0; i <= 7; i++) {
+                for (int j = 0; j <= 7; j++) {
+                    if (peices[i][j].getName() == "K") {
+                        if (peices[i][j].getColour() == colour) {
+                            kingMoves = getKingMoves(colour, i, j);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // get all the response moves
+            for (int i = 0; i <= 7; i++) {
+                for (int j = 0; j <= 7; j++) {
+                    if (peices[i][j].getName() != "" && peices[i][j].getColour() == !colour) {
+                        if (peices[i][j].getName() == "P") {
+                            peiceMoves.merge(getPawnMoves(!colour, i, j));
+                        } else if (peices[i][j].getName() == "R") {
+                            peiceMoves.merge(getRookMoves(!colour, i, j));
+                        } else if (peices[i][j].getName() == "N") {
+                            peiceMoves.merge(getKnightMoves(!colour, i, j));
+                        } else if (peices[i][j].getName() == "B") {
+                            peiceMoves.merge(getBishopMoves(!colour, i, j));
+                        } else if (peices[i][j].getName() == "Q") {
+                            peiceMoves.merge(getRookMoves(!colour, i, j));
+                            peiceMoves.merge(getBishopMoves(!colour, i, j));
+                        } else if (peices[i][j].getName() == "K") {
+                            peiceMoves.merge(getKingMoves(!colour, i, j));                                    
+                        }
+                    }
+                }
+            }
+            peiceMoves.sort();
+            peiceMoves.unique();
+
+            // check if check or checkmate
+            for (pair<int, int> peiceMove : peiceMoves) {
+                for (pair<int, int> kingMove : kingMoves) {
+                    if (peiceMove.first == kingMove.first && peiceMove.second == kingMove.second) {
+                        cout << peiceMove.first << peiceMove.second << " ";
+                        ++count;
+                    }
+                }
+            }
+
+            if (count == kingMoves.size() && count > 0) {
+                cout << endl << "Checkmate!" << endl;
+                return true;
+            } else if (count > 0) {
+                cout << endl << "Check!" << endl;
+            }
+            return false;
+        }
+
+        // pawn moves
+        list<pair<int, int>> getPawnMoves(bool colour, int row, int col) {
+            list<pair<int, int>> moves;
+            int direction;
+
+            if (colour == 1) {
+                direction = 1;
+            } else {
+                direction = -1;
+            }
+
+            if (peices[row + direction][col].getName() == "") {
+                moves.push_back({row + direction, col});
+
+                if (row == 1 && colour == 1) {
+                    moves.push_back({row + 2, col});
+                } else if (row == 6 && colour == 0) {
+                    moves.push_back({row - 2, col});
+                }
+            }
+            if (peices[row + direction][col - 1].getName() != "") {
+                if (col - 1 <= 7 && col - 1 >= 0) {
+                    if (colour != peices[row + direction][col - 1].getColour()) {
+                        moves.push_back({row + direction, col - 1});
+                    }
+                }
+            }
+            if (peices[row + direction][col + 1].getName() != "") {
+                if (col + 1 <= 7 && col + 1 >= 0) {
+                    if (colour != peices[row + direction][col + 1].getColour()) {
+                        moves.push_back({row + direction, col + 1});
+                    }
+                }
+            }
+            return moves;
+        }
+
+        // rook moves
+        list<pair<int, int>> getRookMoves(bool colour, int row, int col) {
+            list<pair<int, int>> moves;
+
+            for (int i = row + 1; i <= 7; i++) {
+                if (peices[i][col].getName() == "") {
+                    moves.push_back({i, col});
+                } else {
+                    if (colour != peices[i][col].getColour()) {
+                        moves.push_back({i, col});
+                    }
+                    break;
+                }
+            }
+            for (int i = row - 1; i >= 0; i--) {
+                if (peices[i][col].getName() == "") {
+                    moves.push_back({i, col});
+                } else {
+                    if (colour != peices[i][col].getColour()) {
+                        moves.push_back({i, col});
+                    }
+                    break;
+                }
+            }
+            for (int i = col + 1; i <= 7; i++) {
+                if (peices[row][i].getName() == "") {
+                    moves.push_back({row, i});
+                } else {
+                    if (colour != peices[row][i].getColour()) {
+                        moves.push_back({row, i});
+                    }
+                    break;
+                }
+            }
+            for (int i = col - 1; i >= 0; i--) {
+                if (peices[row][i].getName() == "") {
+                    moves.push_back({row, i});
+                } else {
+                    if (colour != peices[row][i].getColour()) {
+                        moves.push_back({row, i});
+                    }
+                    break;
+                }
+            }
+            return moves;
+        }
+        
+        // knight moves
+        list<pair<int, int>> getKnightMoves(bool colour, int row, int col) {
+            list<pair<int, int>> moves;
+            list<pair<int, int>> knightMoves = {{row - 2, col - 1},
+                                                {row - 2, col + 1},
+                                                {row - 1, col + 2},
+                                                {row + 1, col + 2},
+                                                {row + 2, col + 1},
+                                                {row + 2, col - 1},
+                                                {row + 1, col - 2},
+                                                {row - 1, col - 2}};
+
+            for (pair<int, int> knightMove : knightMoves) {
+                if (knightMove.first <= 7 && knightMove.first >= 0 && knightMove.second <= 7 && knightMove.second >= 0) {
+                    if (peices[knightMove.first][knightMove.second].getName() == "") {
+                        moves.push_back({knightMove.first, knightMove.second});
+                    } else {
+                        if (colour != peices[knightMove.first][knightMove.second].getColour()) {
+                            moves.push_back({knightMove.first, knightMove.second});
+                        }
+                    }
+                }
+            }
+            return moves;
+        }
+
+        // bishop moves
+        list<pair<int, int>> getBishopMoves(bool colour, int row, int col) {
+            list<pair<int, int>> moves;
+            bool blocks[4] = {true, true, true, true};
+
+            for (int i = 1; i <= 7; i++) {
+                list<pair<int, int>> bishopMoves;
+
+                if (blocks[0]) {
+                    bishopMoves.push_back({row - i, col - i});
+                } else {
+                    bishopMoves.push_back({-1, -1});
+                }
+                if (blocks[1]) {
+                    bishopMoves.push_back({row - i, col + i});
+                } else {
+                    bishopMoves.push_back({-1, -1});
+                }
+                if (blocks[2]) {
+                    bishopMoves.push_back({row + i, col + i});
+                } else {
+                    bishopMoves.push_back({-1, -1});
+                }
+                if (blocks[3]) {
+                    bishopMoves.push_back({row + i, col - i});
+                } else {
+                    bishopMoves.push_back({-1, -1});
+                }
+
+                int count = 0;
+                for (pair<int, int> bishopMove : bishopMoves) {
+                    if (bishopMove.first <= 7 && bishopMove.first >= 0 && bishopMove.second <= 7 && bishopMove.second >= 0) {
+                        if (peices[bishopMove.first][bishopMove.second].getName() == "") {
+                            moves.push_back({bishopMove.first, bishopMove.second});
+                        } else {
+                            if (colour != peices[bishopMove.first][bishopMove.second].getColour()) {
+                                moves.push_back({bishopMove.first, bishopMove.second});
+                            }
+                            blocks[count] = false;
+                        }
+                    }
+                    ++count;
+                }
+            }
+            return moves;
+        }
+
+        // king moves
+        list<pair<int, int>> getKingMoves(bool colour, int row, int col) {
+            list<pair<int, int>> moves;
+            list<pair<int, int>> kingMoves = {{row - 1, col - 1},
+                                              {row - 1, col},
+                                              {row - 1, col + 1},
+                                              {row, col + 1},
+                                              {row + 1, col + 1},
+                                              {row + 1, col},
+                                              {row + 1, col - 1},
+                                              {row, col - 1}};
+
+            for (pair<int, int> kingMove : kingMoves) {
+                if (kingMove.first <= 7 && kingMove.first >= 0 && kingMove.second <= 7 && kingMove.second >= 0) {
+                    if (peices[kingMove.first][kingMove.second].getName() == "") {
+                        moves.push_back({kingMove.first, kingMove.second});
+                    } else {
+                        if (colour != peices[kingMove.first][kingMove.second].getColour()) {
+                            moves.push_back({kingMove.first, kingMove.second});
+                        }
+                    }
+                }
+            }
+            return moves;            
         }
 };
 

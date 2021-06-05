@@ -96,7 +96,6 @@ class King: public Peice {
 class Chess {
     private:
         Peice peices[8][8];
-        bool currentTurn = 0;
 
     public:
         Chess() {
@@ -132,6 +131,8 @@ class Chess {
             // test peices
             Pawn test(1);
             peices[5][1] = test;
+
+            nextTurn();
         }
 
         // display the board
@@ -161,14 +162,24 @@ class Chess {
 
         // starts the next move
         void nextTurn() {
-            if (currentTurn == 0) {
-                playerTurn("Player 1", 0);
-                currentTurn == 1;
-            }
+            cout << endl << "White plays first." << endl;
+
+            bool gameOver;
+            bool currentTurn;
+            do {
+                printBoard();
+                if (currentTurn == 0) {
+                    gameOver = playerTurn("Player 1", 0);
+                    currentTurn = 1;
+                } else {
+                    gameOver = playerTurn("Player 2", 1);
+                    currentTurn = 0;
+                }
+            } while (gameOver == false);
         }
 
         // the user selects where to move
-        void playerTurn(string player, bool colour) {
+        bool playerTurn(string player, bool colour) {
             cout << endl << player << " select a peice to move:" << endl;
             string position;
             cin >> position;
@@ -193,6 +204,7 @@ class Chess {
                                 }
                                 list<pair<int, int>> moves;
 
+                                // calculate the possible moves
                                 if (peices[row + direction][col].getName() == "") {
                                     moves.push_back({row + direction, col});
 
@@ -203,21 +215,47 @@ class Chess {
                                     }
                                 }
                                 if (peices[row + direction][col - 1].getName() != "") {
-                                    if (row + direction <= 7 && row + direction >= 0 && col - 1 <= 7 && col - 1 >= 0) {
+                                    if (col - 1 <= 7 && col - 1 >= 0) {
                                         moves.push_back({row + direction, col - 1});
                                     }
                                 }
                                 if (peices[row + direction][col + 1].getName() != "") {
-                                    if (row + direction <= 7 && row + direction >= 0 && col + 1 <= 7 && col + 1 >= 0) {
+                                    if (col + 1 <= 7 && col + 1 >= 0) {
                                         moves.push_back({row + direction, col + 1});
                                     }
                                 }
 
+                                // user selects possible move
                                 cout << endl << "Pawn moves:" << endl;
+                                int count = 1;
                                 for (pair<int, int> move : moves) {
-                                    cout << " (" << move.first << ", " << move.second << ") ";
+                                    cout << " " << count << ": (" << move.first << ", " << move.second << ") ";
+                                    ++count;
                                 }
-                                cout << endl;
+
+                                int index;
+                                string indexString;
+                                bool valid = false;
+                                do {
+                                    try {
+                                        cout << endl << endl << player << " select a move:" << endl;
+                                        cin >> indexString;
+                                        index = stoi(indexString.substr(0, 1));
+
+                                        if (index <= moves.size() && index > 0) {
+                                            valid = true;
+                                        }
+                                    } catch(...) {
+                                        valid = false;
+                                    }
+                                } while (valid == false);
+
+                                list<pair<int, int>>::iterator it = moves.begin();
+                                advance(it, index - 1);
+                                pair<int, int> move = *it;
+
+                                peices[move.first][move.second] = peice;
+                                peices[row][col] = {};
 
                             // rook moves
                             } else if (peice.getName() == "R") {
@@ -250,23 +288,17 @@ class Chess {
                 }
             } catch (const char error[]) {
                 cout << endl << "Error: " << error << endl;
-                playerTurn(player, colour);
+                return playerTurn(player, colour);
             } catch (...) {
                 cout << endl << "This is not a valid string." << endl;
-                playerTurn(player, colour);
+                return playerTurn(player, colour);
             }
+            return false;
         }
 };
-
 
 // main
 int main() {
     Chess chess;
-    chess.printBoard();
-
-    cout << endl << "White plays first." << endl;
-
-    chess.nextTurn();
-
     return 0;
 }

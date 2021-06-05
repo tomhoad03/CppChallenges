@@ -129,10 +129,6 @@ class Chess {
             King greenKing(1), whiteKing(0);
             peices[0][4] = greenKing, peices[7][3] = whiteKing;
 
-            // test peices
-            Bishop test(0);
-            peices[5][1] = test;
-
             nextTurn();
         }
 
@@ -238,9 +234,10 @@ class Chess {
                                         moves.push_back({row + direction, col + 1});
                                     }
                                 }
+                            }
 
                             // rook moves
-                            } else if (peice.getName() == "R") {
+                            if (peice.getName() == "R" || peice.getName() == "Q") {
                                 for (int i = row + 1; i <= 7; i++) {
                                     if (peices[i][col].getName() == "") {
                                         moves.push_back({i, col});
@@ -281,9 +278,10 @@ class Chess {
                                         break;
                                     }
                                 }
+                            }
 
                             // knight moves
-                            } else if (peice.getName() == "N") {
+                            if (peice.getName() == "N") {
                                 list<pair<int, int>> knightMoves = {{row - 2, col - 1},
                                                                     {row - 2, col + 1},
                                                                     {row - 1, col + 2},
@@ -304,9 +302,10 @@ class Chess {
                                         }
                                     }
                                 }
-
+                            }
+                            
                             // bishop moves
-                            } else if (peice.getName() == "B") {
+                            if (peice.getName() == "B" || peice.getName() == "Q") {
                                 bool blocks[4] = {true, true, true, true};
 
                                 for (int i = 1; i <= 7; i++) {
@@ -348,14 +347,30 @@ class Chess {
                                         ++count;
                                     }
                                 }
-                            
-                            // queen moves
-                            } else if (peice.getName() == "Q") {
-                                cout << "Queen" << endl;
+                            }
 
                             // king moves
-                            } else if (peice.getName() == "K") {
-                                cout << "King" << endl;
+                            if (peice.getName() == "K") {
+                                list<pair<int, int>> kingMoves = {{row - 1, col - 1},
+                                                                  {row - 1, col},
+                                                                  {row - 1, col + 1},
+                                                                  {row, col + 1},
+                                                                  {row + 1, col + 1},
+                                                                  {row + 1, col},
+                                                                  {row + 1, col - 1},
+                                                                  {row, col - 1}};
+
+                                for (pair<int, int> kingMove : kingMoves) {
+                                    if (kingMove.first <= 7 && kingMove.first >= 0 && kingMove.second <= 7 && kingMove.second >= 0) {
+                                        if (peices[kingMove.first][kingMove.second].getName() == "") {
+                                            moves.push_back({kingMove.first, kingMove.second});
+                                        } else {
+                                            if (peice.getColour() != peices[kingMove.first][kingMove.second].getColour()) {
+                                                moves.push_back({kingMove.first, kingMove.second});
+                                            }
+                                        }
+                                    }
+                                }                                    
                             }
 
                             // user selects possible move

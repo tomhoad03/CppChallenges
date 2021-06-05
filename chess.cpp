@@ -1,5 +1,5 @@
 #include <iostream>
-#include <windows.h>
+#include <list>
 
 using namespace std;
 
@@ -128,6 +128,10 @@ class Chess {
             // kings
             King greenKing(1), whiteKing(0);
             peices[0][4] = greenKing, peices[7][3] = whiteKing;
+
+            // test peices
+            Pawn test(1);
+            peices[5][1] = test;
         }
 
         // display the board
@@ -166,7 +170,6 @@ class Chess {
         // the user selects where to move
         void playerTurn(string player, bool colour) {
             cout << endl << player << " select a peice to move:" << endl;
-
             string position;
             cin >> position;
 
@@ -174,23 +177,65 @@ class Chess {
                 int row = 8 - stoi(position.substr(1, 2));
                 int col = (int(position.substr(0, 1)[0]) - 97);
 
-                cout << row << col;
-
                 if (row <= 7 && row >= 0 && col <= 7 && col >= 0) {
                     Peice peice = peices[row][col];
                     
                     if (peice.getName() != "") {
                         if (peice.getColour() == colour) {
+
+                            // pawn moves
                             if (peice.getName() == "P") {
-                                cout << "Pawn" << endl;
+                                int direction;
+                                if (peice.getColour() == 1) {
+                                    direction = 1;
+                                } else {
+                                    direction = -1;
+                                }
+                                list<pair<int, int>> moves;
+
+                                if (peices[row + direction][col].getName() == "") {
+                                    moves.push_back({row + direction, col});
+
+                                    if ((row = 1) && peice.getColour() == 1) {
+                                        moves.push_back({row + 2, col});
+                                    } else if ((row = 6) && peice.getColour() == 0) {
+                                        moves.push_back({row - 2, col});
+                                    }
+                                }
+                                if (peices[row + direction][col - 1].getName() != "") {
+                                    if (row + direction <= 7 && row + direction >= 0 && col - 1 <= 7 && col - 1 >= 0) {
+                                        moves.push_back({row + direction, col - 1});
+                                    }
+                                }
+                                if (peices[row + direction][col + 1].getName() != "") {
+                                    if (row + direction <= 7 && row + direction >= 0 && col + 1 <= 7 && col + 1 >= 0) {
+                                        moves.push_back({row + direction, col + 1});
+                                    }
+                                }
+
+                                cout << endl << "Pawn moves:" << endl;
+                                for (pair<int, int> move : moves) {
+                                    cout << " (" << move.first << ", " << move.second << ") ";
+                                }
+                                cout << endl;
+
+                            // rook moves
                             } else if (peice.getName() == "R") {
                                 cout << "Rook" << endl;
+
+                            // knight moves
                             } else if (peice.getName() == "N") {
                                 cout << "Knight" << endl;
+
+                            // bishop moves
                             } else if (peice.getName() == "B") {
                                 cout << "Bishop" << endl;
+                            
+                            // queen moves
                             } else if (peice.getName() == "Q") {
                                 cout << "Queen" << endl;
+
+                            // king moves
                             } else if (peice.getName() == "K") {
                                 cout << "King" << endl;
                             }
@@ -213,6 +258,8 @@ class Chess {
         }
 };
 
+
+// main
 int main() {
     Chess chess;
     chess.printBoard();

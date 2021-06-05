@@ -69,7 +69,7 @@ class Knight: public Peice {
 class Bishop: public Peice {
     public:
         Bishop(bool c) {
-            setName("R");
+            setName("B");
             setColour(c);
         }
 };
@@ -78,7 +78,7 @@ class Bishop: public Peice {
 class Queen: public Peice {
     public:
         Queen(bool c) {
-            setName("R");
+            setName("Q");
             setColour(c);
         }
 };
@@ -87,7 +87,7 @@ class Queen: public Peice {
 class King: public Peice {
     public:
         King(bool c) {
-            setName("R");
+            setName("K");
             setColour(c);
         }
 };
@@ -96,6 +96,7 @@ class King: public Peice {
 class Chess {
     private:
         Peice peices[8][8];
+        bool currentTurn = 0;
 
     public:
         Chess() {
@@ -122,11 +123,11 @@ class Chess {
 
             // queens
             Queen greenQueen(1), whiteQueen(0);
-            peices[0][3] = greenQueen, peices[7][3] = whiteQueen;
+            peices[0][3] = greenQueen, peices[7][4] = whiteQueen;
 
             // kings
             King greenKing(1), whiteKing(0);
-            peices[0][4] = greenKing, peices[7][4] = whiteKing;
+            peices[0][4] = greenKing, peices[7][3] = whiteKing;
         }
 
         // display the board
@@ -153,11 +154,72 @@ class Chess {
             }
             cout << "|-------------------------------|" << endl;
         }
+
+        // starts the next move
+        void nextTurn() {
+            if (currentTurn == 0) {
+                playerTurn("Player 1", 0);
+                currentTurn == 1;
+            }
+        }
+
+        // the user selects where to move
+        void playerTurn(string player, bool colour) {
+            cout << endl << player << " select a peice to move:" << endl;
+
+            string position;
+            cin >> position;
+
+            try {
+                int row = 8 - stoi(position.substr(1, 2));
+                int col = (int(position.substr(0, 1)[0]) - 97);
+
+                cout << row << col;
+
+                if (row <= 7 && row >= 0 && col <= 7 && col >= 0) {
+                    Peice peice = peices[row][col];
+                    
+                    if (peice.getName() != "") {
+                        if (peice.getColour() == colour) {
+                            if (peice.getName() == "P") {
+                                cout << "Pawn" << endl;
+                            } else if (peice.getName() == "R") {
+                                cout << "Rook" << endl;
+                            } else if (peice.getName() == "N") {
+                                cout << "Knight" << endl;
+                            } else if (peice.getName() == "B") {
+                                cout << "Bishop" << endl;
+                            } else if (peice.getName() == "Q") {
+                                cout << "Queen" << endl;
+                            } else if (peice.getName() == "K") {
+                                cout << "King" << endl;
+                            }
+                        } else {
+                            throw("This peice does not belong to the player.");
+                        }
+                    } else {
+                        throw("No peice is at this location.");
+                    }
+                } else {
+                    throw("This is not a valid location.");
+                }
+            } catch (const char error[]) {
+                cout << endl << "Error: " << error << endl;
+                playerTurn(player, colour);
+            } catch (...) {
+                cout << endl << "This is not a valid string." << endl;
+                playerTurn(player, colour);
+            }
+        }
 };
 
 int main() {
     Chess chess;
     chess.printBoard();
+
+    cout << endl << "White plays first." << endl;
+
+    chess.nextTurn();
 
     return 0;
 }

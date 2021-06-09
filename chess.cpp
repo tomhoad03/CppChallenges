@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include <tuple>
+#include <cmath>
 #include <list>
 
 using namespace std;
@@ -9,7 +11,7 @@ class Peice {
     private:
         string name;
         bool colour; // 0 = white, 1 = green
-        int row, col;
+        int row, col, weight;
 
     public:
         string getName() {
@@ -24,6 +26,9 @@ class Peice {
         int getCol() {
             return col;
         }
+        int getWeight() {
+            return weight;
+        }
         void setName(string n) {
             name = n;
         }
@@ -36,6 +41,9 @@ class Peice {
         void setCol(int c) {
             col = c;
         }
+        void setWeight(int w) {
+            weight = w;
+        }
 };
 
 
@@ -45,6 +53,7 @@ class Pawn: public Peice {
         Pawn(bool c) {
             setName("P");
             setColour(c);
+            setWeight(1);
         }
 };
 
@@ -54,6 +63,7 @@ class Rook: public Peice {
         Rook(bool c) {
             setName("R");
             setColour(c);
+            setWeight(5);
         }
 };
 
@@ -63,6 +73,7 @@ class Knight: public Peice {
         Knight(bool c) {
             setName("N");
             setColour(c);
+            setWeight(3);
         }
 };
 
@@ -72,6 +83,7 @@ class Bishop: public Peice {
         Bishop(bool c) {
             setName("B");
             setColour(c);
+            setWeight(4);
         }
 };
 
@@ -81,6 +93,7 @@ class Queen: public Peice {
         Queen(bool c) {
             setName("Q");
             setColour(c);
+            setWeight(9);
         }
 };
 
@@ -90,6 +103,7 @@ class King: public Peice {
         King(bool c) {
             setName("K");
             setColour(c);
+            setWeight(0);
         }
 };
 
@@ -147,12 +161,14 @@ class Chess {
                         end.append(1, char(56 - i));
                         end.append(1, '\n');
                     }
-                    if (peice.getName() == "") {
-                        cout << " " << end;
-                    } else if (peice.getColour() == 1) { 
-                        cout << "\033[32m" << peice.getName() << "\033[37m" << end;
+                    if (peice.getName() != "") {
+                        if (peice.getColour() == 1) { 
+                            cout << "\033[32m" << peice.getName() << "\033[37m" << end;
+                        } else {
+                            cout << peice.getName() << end;
+                        }
                     } else {
-                        cout << peice.getName() << end;
+                        cout << " " << end;
                     }
                 }
             }
@@ -164,33 +180,30 @@ class Chess {
         void nextTurn() {
             cout << endl << "White plays first." << endl;
 
-            bool gameOver;
-            bool currentTurn;
+            bool gameOver = 0, currentTurn = 1;
             do {
-                printBoard();
-                if (currentTurn == 0) {
-                    gameOver = playerTurn("Player 1", 0);
-                    currentTurn = 1;
-                } else {
-                    gameOver = playerTurn("Player 2", 1);
+                if (currentTurn == 1) {
+                    printBoard();
+                    gameOver = playerTurn();
                     currentTurn = 0;
+                } else {
+                    gameOver = aiTurn();
+                    currentTurn = 1;
                 }
-            } while (gameOver == false);
+            } while (gameOver == 0);
 
             // ends the game
-            printBoard();
-            cout << endl << "Game over!" << endl;
-
-            if (currentTurn == 1) {
-                cout << endl << "Player 1 wins!" << endl << endl;
+            if (currentTurn == 0) {
+                printBoard();
+                cout << endl << "Game over!" << endl << endl << "Player 1 wins!" << endl << endl;
             } else {
-                cout << endl << "Player 2 wins!" << endl << endl;
+                cout << endl << "Game over!" << endl << endl << "AI wins!" << endl << endl;
             }
         }
 
         // the user selects where to move
-        bool playerTurn(string player, bool colour) {
-            cout << endl << player << " select a peice to move:" << endl;
+        bool playerTurn() {
+            cout << endl << "Player, select a peice to move:" << endl;
             string position;
             cin >> position;
 
@@ -200,24 +213,10 @@ class Chess {
 
                 if (row <= 7 && row >= 0 && col <= 7 && col >= 0) {
                     Peice peice = peices[row][col];
-                    list<pair<int, int>> moves;
                     
                     if (peice.getName() != "") {
-                        if (peice.getColour() == colour) {
-                            if (peice.getName() == "P") {
-                                moves = getPawnMoves(colour, row, col);
-                            } else if (peice.getName() == "R") {
-                                moves = getRookMoves(colour, row, col);
-                            } else if (peice.getName() == "N") {
-                                moves = getKnightMoves(colour, row, col);
-                            } else if (peice.getName() == "B") {
-                                moves = getBishopMoves(colour, row, col);
-                            } else if (peice.getName() == "Q") {
-                                moves = getRookMoves(colour, row, col);
-                                moves.merge(getBishopMoves(colour, row, col));
-                            } else if (peice.getName() == "K") {
-                                moves = getKingMoves(colour, row, col);                                    
-                            }
+                        if (peice.getColour() == 0) {
+                            list<pair<int, int>> moves = getMoves(peice.getName(), 0, row, col);
 
                             // user selects possible move
                             if (moves.size() > 0) {
@@ -230,35 +229,24 @@ class Chess {
 
                                 int index;
                                 string indexString;
-                                bool valid = false;
+                                bool valid = 0;
                                 do {
                                     try {
-                                        cout << endl << endl << player << " select a move:" << endl;
+                                        cout << endl << endl << "Player, select a move:" << endl;
                                         cin >> indexString;
                                         index = stoi(indexString.substr(0, 1));
 
-                                        if (index <= moves.size() && index > 0) {
-                                            valid = true;
+                                        if (index <= (int) moves.size() && index > 0) {
+                                            valid = 1;
                                         }
                                     } catch(...) {
-                                        valid = false;
+                                        valid = 0;
                                     }
-                                } while (valid == false);
+                                } while (valid == 0);
 
-                                // the move is made
                                 list<pair<int, int>>::iterator it = moves.begin();
                                 advance(it, index - 1);
-                                pair<int, int> move = *it;
-
-                                string last = peices[move.first][move.second].getName();
-                                peices[move.first][move.second] = peice;
-                                peices[row][col] = {};
-
-                                if (last == "K") {
-                                    return true;
-                                } else {
-                                    return checkCheck(!colour);
-                                }
+                                return makeMove(*it, row, col);
                             } else {
                                 throw("No moves available for that peice.");
                             }
@@ -273,72 +261,118 @@ class Chess {
                 }
             } catch (const char error[]) {
                 cout << endl << "Error: " << error << endl;
-                return playerTurn(player, colour);
+                return playerTurn();
             } catch (...) {
                 cout << endl << "This is not a valid string." << endl;
-                return playerTurn(player, colour);
+                return playerTurn();
             }
-            return false;
+            return 0;
         }
 
-        // check for a check or checkmate
-        bool checkCheck(bool colour) {
-            list<pair<int, int>> kingMoves, peiceMoves;
-            int count;
+        // the "AI" makes a move
+        bool aiTurn() {
+            list<tuple<int, int, int, pair<int, int>>> blackPeices;
 
-            // get king moves
             for (int i = 0; i <= 7; i++) {
                 for (int j = 0; j <= 7; j++) {
-                    if (peices[i][j].getName() == "K") {
-                        if (peices[i][j].getColour() == colour) {
-                            kingMoves = getKingMoves(colour, i, j);
-                            break;
+                    if (peices[i][j].getName() != "" && peices[i][j].getColour() == 1) {
+                        list<pair<int, int>> moves = getMoves(peices[i][j].getName(), 1, i, j);
+                        if (moves.size() > 0){
+                            int maxWeight;
+                            pair<int, int> maxMove = moves.front();
+                            for (pair<int, int> move : moves) {
+                                int weight = (peices[move.first][move.second].getWeight()) + i;
+                                if (weight > maxWeight) {
+                                    maxWeight = weight;
+                                    maxMove = move;
+                                }
+                            }
+                            blackPeices.push_back({i, j, (5 * (i + 1)) + (10 * maxWeight) + (4 - (round (abs (3.5 - j)))) + (2 * peices[i][j].getWeight()), maxMove});
                         }
                     }
                 }
             }
+            blackPeices.sort([] (const tuple<int, int, int, pair<int, int>> & a, const  tuple<int, int, int, pair<int, int>> & b) {
+                return (get<2>(a) > get<2>(b));
+            });
+            for (tuple<int, int, int, pair<int, int>> blackPeice : blackPeices) {
+                return makeMove({get<3>(blackPeice).first, get<3>(blackPeice).second}, get<0>(blackPeice), get<1>(blackPeice));
+            }
+        }
 
-            // get all the response moves
-            for (int i = 0; i <= 7; i++) {
-                for (int j = 0; j <= 7; j++) {
-                    if (peices[i][j].getName() != "" && peices[i][j].getColour() == !colour) {
-                        if (peices[i][j].getName() == "P") {
-                            peiceMoves.merge(getPawnMoves(!colour, i, j));
-                        } else if (peices[i][j].getName() == "R") {
-                            peiceMoves.merge(getRookMoves(!colour, i, j));
-                        } else if (peices[i][j].getName() == "N") {
-                            peiceMoves.merge(getKnightMoves(!colour, i, j));
-                        } else if (peices[i][j].getName() == "B") {
-                            peiceMoves.merge(getBishopMoves(!colour, i, j));
-                        } else if (peices[i][j].getName() == "Q") {
-                            peiceMoves.merge(getRookMoves(!colour, i, j));
-                            peiceMoves.merge(getBishopMoves(!colour, i, j));
-                        } else if (peices[i][j].getName() == "K") {
-                            peiceMoves.merge(getKingMoves(!colour, i, j));                                    
+        // gets the moves for an unknown peice
+        list<pair<int, int>> getMoves(string name, bool colour, int row, int col) {
+            list<pair<int, int>> moves;
+            if (name == "P") {
+                moves = getPawnMoves(colour, row, col);
+            } else if (name == "R") {
+                moves = getRookMoves(colour, row, col);
+            } else if (name == "N") {
+                moves = getKnightMoves(colour, row, col);
+            } else if (name == "B") {
+                moves = getBishopMoves(colour, row, col);
+            } else if (name == "Q") {
+                moves = getRookMoves(colour, row, col);
+                moves.merge(getBishopMoves(colour, row, col));
+            } else if (name == "K") {
+                moves = getKingMoves(colour, row, col);                                    
+            }
+            return moves;
+        }
+
+        // the move is made
+        bool makeMove(pair<int, int> move, int row, int col) {
+            string last = peices[move.first][move.second].getName();
+            peices[move.first][move.second] = peices[row][col];
+            peices[row][col] = {};
+
+            if (last == "K") {
+                return 1;
+            } else {
+                // check for a check or checkmate
+                list<pair<int, int>> kingMoves, peiceMoves;
+                int count;
+
+                // get king moves
+                for (int i = 0; i <= 7; i++) {
+                    for (int j = 0; j <= 7; j++) {
+                        if (peices[i][j].getName() == "K") {
+                            if (peices[i][j].getColour() == 0) {
+                                kingMoves = getKingMoves(0, i, j);
+                                break;
+                            }
                         }
                     }
                 }
-            }
-            peiceMoves.sort();
-            peiceMoves.unique();
 
-            // check if check or checkmate
-            for (pair<int, int> peiceMove : peiceMoves) {
-                for (pair<int, int> kingMove : kingMoves) {
-                    if (peiceMove.first == kingMove.first && peiceMove.second == kingMove.second) {
-                        cout << peiceMove.first << peiceMove.second << " ";
-                        ++count;
+                // get all the response moves
+                for (int i = 0; i <= 7; i++) {
+                    for (int j = 0; j <= 7; j++) {
+                        if (peices[i][j].getName() != "" && peices[i][j].getColour() == 1) {
+                            peiceMoves = getMoves(peices[i][j].getName(), 1, i, j);
+                        }
                     }
                 }
-            }
+                peiceMoves.sort();
+                peiceMoves.unique();
 
-            if (count == kingMoves.size() && count > 0) {
-                cout << endl << "Checkmate!" << endl;
-                return true;
-            } else if (count > 0) {
-                cout << endl << "Check!" << endl;
+                // check if check or checkmate
+                for (pair<int, int> peiceMove : peiceMoves) {
+                    for (pair<int, int> kingMove : kingMoves) {
+                        if (peiceMove.first == kingMove.first && peiceMove.second == kingMove.second) {
+                            cout << peiceMove.first << peiceMove.second << " ";
+                            ++count;
+                        }
+                    }
+                }
+                if (count == (int) kingMoves.size() && count > 0) {
+                    cout << endl << "Checkmate!" << endl;
+                    return 1;
+                } else if (count > 0) {
+                    cout << endl << "Check!" << endl;
+                }
             }
-            return false;
+            return 0;
         }
 
         // pawn moves
@@ -454,7 +488,7 @@ class Chess {
         // bishop moves
         list<pair<int, int>> getBishopMoves(bool colour, int row, int col) {
             list<pair<int, int>> moves;
-            bool blocks[4] = {true, true, true, true};
+            bool blocks[4] = {1, 1, 1, 1};
 
             for (int i = 1; i <= 7; i++) {
                 list<pair<int, int>> bishopMoves;
@@ -489,7 +523,7 @@ class Chess {
                             if (colour != peices[bishopMove.first][bishopMove.second].getColour()) {
                                 moves.push_back({bishopMove.first, bishopMove.second});
                             }
-                            blocks[count] = false;
+                            blocks[count] = 0;
                         }
                     }
                     ++count;
